@@ -1,0 +1,11 @@
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/Main.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/model/UsersTable.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/UsersApp.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/eventhandler/SyncBtn.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/storage/UserStorage.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/eventhandler/EditUserBtn.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/model/User.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/eventhandler/CancelBtn.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/dao/UsersFile.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/eventhandler/SaveBtn.java
+/mnt/Data/Work/projects/secure-cloud-storage-projects/sample-desktop-app/src/main/java/dev/husein/sampledesktopapp/ui/eventhandler/DeleteUserBtn.java
