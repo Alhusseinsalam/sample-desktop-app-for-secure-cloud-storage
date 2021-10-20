@@ -21,16 +21,24 @@ import java.util.List;
 public class UsersApp extends Application {
     @Override
     public void start(Stage mainStage) throws Exception {
+        table = new TableView<>();
+        tfId = new TextField();
+        tfName = new TextField();
+        tfAge = new TextField();
         UserStorage.createDataFile();
         mainStage.setTitle("Users Management");
         mainStage.setScene(getMainScene());
         mainStage.show();
     }
 
-    private static TableView<User> table = new TableView<>();
-    private static TextField tfId = new TextField();
-    private static TextField tfName = new TextField();
-    private static TextField tfAge = new TextField();
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+
+    private static TableView<User> table;
+    private static TextField tfId;
+    private static TextField tfName;
+    private static TextField tfAge;
 
     private static String getSelectedUserId() {
         return ((User) table.getSelectionModel().selectedItemProperty().get()).getUserId();
@@ -171,9 +179,5 @@ public class UsersApp extends Application {
         });
 
         return table;
-    }
-
-    public static void main(String[] args) {
-        Application.launch(args);
     }
 }
