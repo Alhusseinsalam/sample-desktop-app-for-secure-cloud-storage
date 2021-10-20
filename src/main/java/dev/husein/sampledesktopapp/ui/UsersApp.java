@@ -1,9 +1,8 @@
 package dev.husein.sampledesktopapp.ui;
 
+import com.google.common.base.Strings;
 import dev.husein.sampledesktopapp.model.User;
 import dev.husein.sampledesktopapp.storage.UserStorage;
-import dev.husein.sampledesktopapp.ui.eventhandler.*;
-import dev.husein.sampledesktopapp.ui.model.UsersTable;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,25 +12,55 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.script.Bindings;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsersApp extends Application {
     @Override
     public void start(Stage mainStage) throws Exception {
+        UserStorage.createDataFile();
         mainStage.setTitle("Users Management");
-        mainStage.setScene(getUserEditScene());
+        mainStage.setScene(getMainScene());
         mainStage.show();
+    }
+
+    private static TableView<User> table = new TableView<>();
+    private static TextField tfId = new TextField();
+    private static TextField tfName = new TextField();
+    private static TextField tfAge = new TextField();
+
+    private static String getSelectedUserId() {
+        return ((User) table.getSelectionModel().selectedItemProperty().get()).getUserId();
+    }
+
+    private static User getSelectedUser() {
+        return UserStorage.getUserById(getSelectedUserId());
     }
 
     private static Scene getUserEditScene() {
         GridPane pane = getUserEditPane();
         return new Scene(pane, 500, 500);
+    }
+
+    private static void loadDataIntoTable() {
+        List<User> users = UserStorage.openDataFile().getUsers();
+        ArrayList<User> usersTableList = new ArrayList<User>();
+        for (User user : users) {
+            User userRow = new User();
+
+            userRow.setUserId(user.getUserId());
+            userRow.setName(user.getName());
+            userRow.setAge(user.getAge());
+
+            usersTableList.add(userRow);
+        }
+
+        ObservableList<User> usersTableData = FXCollections.observableArrayList(usersTableList);
+        table.setItems(usersTableData);
+        table.getSelectionModel().selectFirst();
     }
 
     private static GridPane getUserEditPane() {
@@ -45,18 +74,18 @@ public class UsersApp extends Application {
         Label lblName = new Label("Name: ");
         Label lblAge = new Label("Age: ");
 
-        TextField tfId = new TextField();
-        TextField tfName = new TextField();
-        TextField tfAge = new TextField();
         tfAge.setPrefColumnCount(3);
 
-        Button btnSave = new Button("Save");
-        SaveBtn saveBtn = new SaveBtn();
-        btnSave.setOnAction(saveBtn);
+        Button btnAdd = new Button("Add");
+        btnAdd.setOnAction(actionEvent -> {
+            User user = new User(tfId.getText(), tfName.getText(), Integer.parseInt(tfAge.getText()));
+            UserStorage.persistUser(user);
 
-        Button btnCancel = new Button("Cancel");
-        CancelBtn cancelBtn = new CancelBtn();
-        btnCancel.setOnAction(cancelBtn);
+            loadDataIntoTable();
+            tfId.clear();
+            tfAge.clear();
+            tfName.clear();
+        });
 
         pane.add(lblId, 0, 0);
         pane.add(tfId, 1, 0);
@@ -67,8 +96,7 @@ public class UsersApp extends Application {
         pane.add(lblAge, 0, 2);
         pane.add(tfAge, 1, 2);
 
-        pane.add(btnSave, 0, 3);
-        pane.add(btnCancel, 1, 3);
+        pane.add(btnAdd, 0, 3);
 
         return pane;
     }
@@ -81,54 +109,66 @@ public class UsersApp extends Application {
         buttonsPane.setVgap(20);
         buttonsPane.setVgap(20);
 
+        // add button to sync
         Button btnSync = new Button("Sync");
-        btnSync.setOnAction(new SyncBtn());
+        btnSync.setOnAction(actionEvent -> {
+            System.out.println("Syncing");
+        });
 
-        buttonsPane.add(btnSync, 0, 0);
+        // add button to edit
+        Button btnEditUser = new Button("Edit");
+        btnEditUser.setOnAction(actionEvent -> {
+            User user = getSelectedUser();
+            tfId.setText(user.getUserId());
+            tfName.setText(user.getName());
+            tfAge.setText(Integer.toString(user.getAge()));
+        });
+
+        // button to delete
+        Button btnDeleteUser =  new Button("Delete");
+        btnDeleteUser.setOnAction(actionEvent -> {
+            System.out.println("Delete User Button was Clicked");
+            String userId = getSelectedUserId();
+            System.out.println("Selected to Delete: " + userId);
+            UserStorage.deleteUserById(userId);
+            System.out.println(actionEvent);
+            loadDataIntoTable();
+        });
+
+        buttonsPane.add(btnEditUser, 0, 0);
+        buttonsPane.add(btnDeleteUser, 1, 0);
+        buttonsPane.add(btnSync, 2, 0);
 
         vBox.getChildren().add(getUsersListTable());
         vBox.getChildren().add(buttonsPane);
+        vBox.getChildren().add(getUserEditPane());
 
         return new Scene(vBox, 500, 500);
     }
 
     private static TableView getUsersListTable() {
-        List<User> users = UserStorage.openDataFile().getUsers();
-        ArrayList<UsersTable> usersTableList = new ArrayList<UsersTable>();
-        for (User user : users) {
-            UsersTable usersTable = new UsersTable();
-            usersTable.setUserId(user.getUserId());
-            // add button to edit
-            Button btnEditUser = new Button("Edit");
-            btnEditUser.setOnAction(new EditUserBtn());
-            usersTable.setEditBtn(btnEditUser);
-            // button to delete
-            Button btnDeleteUser =  new Button("Delete");
-            btnDeleteUser.setOnAction(new DeleteUserBtn());
-            usersTable.setDeleteBtn(btnDeleteUser);
-            usersTableList.add(usersTable);
-        }
-        ObservableList<UsersTable> usersTableData = FXCollections.observableArrayList(usersTableList);
-
-        TableView<UsersTable> table = new TableView<>();
+        loadDataIntoTable();
         final Label label = new Label("Users List");
 
         TableColumn userIdCol = new TableColumn<>("User ID");
         userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
 
-        TableColumn editBtnCol = new TableColumn<>("Edit");
-        editBtnCol.setCellValueFactory(new PropertyValueFactory<>("editBtn"));
+        TableColumn userNameCol = new TableColumn<>("User Name");
+        userNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn deleteBtnCol = new TableColumn<>("Delete");
-        deleteBtnCol.setCellValueFactory(new PropertyValueFactory<>("deleteBtn"));
+        TableColumn userAgeCol = new TableColumn<>("User Age");
+        userAgeCol.setCellValueFactory(new PropertyValueFactory<>("age"));
 
-        table.setItems(usersTableData);
-        table.getColumns().addAll(userIdCol, editBtnCol, deleteBtnCol);
+        table.getColumns().addAll(userIdCol, userNameCol, userAgeCol);
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
         vbox.getChildren().addAll(label, table);
+
+        table.getSelectionModel().selectedItemProperty().addListener((observableValue, usersTable, newValue) -> {
+            System.out.println(newValue);
+        });
 
         return table;
     }

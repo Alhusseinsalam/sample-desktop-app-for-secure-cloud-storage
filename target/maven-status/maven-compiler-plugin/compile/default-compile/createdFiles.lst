@@ -1,11 +1,5 @@
 dev/husein/sampledesktopapp/storage/UserStorage.class
 dev/husein/sampledesktopapp/dao/UsersFile.class
-dev/husein/sampledesktopapp/ui/model/UsersTable.class
-dev/husein/sampledesktopapp/ui/eventhandler/DeleteUserBtn.class
-dev/husein/sampledesktopapp/ui/eventhandler/SyncBtn.class
-dev/husein/sampledesktopapp/ui/eventhandler/SaveBtn.class
-dev/husein/sampledesktopapp/ui/eventhandler/CancelBtn.class
-dev/husein/sampledesktopapp/ui/eventhandler/EditUserBtn.class
 dev/husein/sampledesktopapp/ui/UsersApp.class
 dev/husein/sampledesktopapp/Main.class
 dev/husein/sampledesktopapp/model/User.class

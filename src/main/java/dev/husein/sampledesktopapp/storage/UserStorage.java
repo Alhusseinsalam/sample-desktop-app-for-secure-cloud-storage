@@ -43,9 +43,30 @@ public class UserStorage {
         }
     }
 
-    public static void storeNewUser(User user) {
+    public static void persistUser(User user) {
         UsersFile uf = openDataFile();
+        User existingUser = getUserById(user.getUserId());
+        if (existingUser != null) {
+            uf.removeUserFromList(existingUser);
+        }
         uf.addUserToList(user);
         storeDataToExistingFile(uf);
+    }
+
+    public static User getUserById(String id) {
+        UsersFile uf = openDataFile();
+        for (User user : uf.getUsers()) {
+            if (user.getUserId().equals(id)) return user;
+        }
+        return null;
+    }
+
+    public static void deleteUserById(String id) {
+        UsersFile uf = openDataFile();
+        User user = getUserById(id);
+        if (user != null) {
+            uf.removeUserFromList(user);
+            storeDataToExistingFile(uf);
+        }
     }
 }
